@@ -10,9 +10,9 @@ namespace AutomatedFishing.Utility
         /// <returns>The contents of the currently active screen as a <see cref="Bitmap"/></returns>
         public static Bitmap GetScreenAsBitmap()
         {
-            Bitmap captureBitmap = new Bitmap(1920, 1080, PixelFormat.Format32bppArgb);
+            Bitmap captureBitmap = new Bitmap(Program.VirtualScreen.Width, Program.VirtualScreen.Height, PixelFormat.Format32bppArgb);
             using Graphics captureGraphics = Graphics.FromImage(captureBitmap);
-            captureGraphics.CopyFromScreen(new Point(0, 0), new Point(0, 0), new Size(1920, 1080));
+            captureGraphics.CopyFromScreen(Program.VirtualScreen.Left, Program.VirtualScreen.Top, 0, 0, captureBitmap.Size);
             return captureBitmap;
         }
 

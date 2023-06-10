@@ -62,8 +62,7 @@ namespace D2AutoFisher
                 {
                     string errorMessage = "Failed to find calibration box. "
                     + "Please follow the instructions and press 'Calibrate' when relevant before running auto-fisher!";
-                    Program.Logger.Log(errorMessage, LogType.Error);
-                    MessageBox.Show(errorMessage);
+                    throw new Exception(errorMessage);
                 }
 
                 if (AutomatedFishing != null)
@@ -75,7 +74,7 @@ namespace D2AutoFisher
                 }
 
                 Program.Logger.Log("Started automatic fishing routine.");
-                Program.AutomatedFishing = Process.Start("AutomatedFishing.exe", new string[] { JsonConvert.SerializeObject(Program.Settings) });
+                Program.AutomatedFishing = Process.Start("AutomatedFishing/AutomatedFishing.exe", new string[] { JsonConvert.SerializeObject(Program.Settings), JsonConvert.SerializeObject(SystemInformation.VirtualScreen) });
                 MessageBox.Show("Sucessfully started new automatic fishing routine in a seperate console window, this window will automatically close to preserve resources.");
                 Environment.Exit(0);
             }
