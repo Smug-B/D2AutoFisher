@@ -1,0 +1,63 @@
+﻿{
+  "TrainingTime": 2147482,
+  "Scenario": "ObjectDetection",
+  "DataSource": {
+    "Type": "Vott",
+    "Version": 1,
+    "FilePath": "C:\\Users\\smugb\\Documents\\Projects\\D2AutoFisher\\Samples\\Curated\\vott-json-export\\D2-Interaction-Detector-export.json"
+  },
+  "Environment": {
+    "Type": "Azure",
+    "Version": 1,
+    "SubscriptionID": "5c09c93b-0512-4318-8e97-89b180efc784",
+    "ResourceGroupName": "Alpha",
+    "WorkspaceName": "D2_Auto_Fisher",
+    "ComputeName": "AutoFisher",
+    "Location": "eastus",
+    "ExperimentName": "Interaction_Box_Locator"
+  },
+  "RunHistory": {
+    "Version": 1,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 0,
+        "Type": "Trial",
+        "TrainerName": "fasterrcnn-resnet50-fpn",
+        "Score": 1.0,
+        "RuntimeInSeconds": 2286.5766645
+      }
+    ],
+    "Pipeline": {
+      "parameter": {
+        "0": {
+          "OutputColumnName": "input1",
+          "InputColumnName": "input1",
+          "ImageHeight": 600,
+          "ImageWidth": 800,
+          "CropAnchor": "Center",
+          "Resizing": "Fill"
+        },
+        "1": {
+          "OutputColumnName": "input1",
+          "InputColumnName": "input1",
+          "ColorsToExtract": "Rgb",
+          "OrderOfExtraction": "ARGB",
+          "OutputAsFloatArray": true
+        },
+        "2": {
+          "ModelFile": "C:\\Users\\smugb\\Documents\\Projects\\D2AutoFisher\\InteractionBoxLocator.onnx",
+          "FallbackToCpu": true
+        }
+      },
+      "estimators": [
+        "ResizeImages",
+        "ExtractPixels",
+        "ApplyOnnxModel"
+      ]
+    },
+    "MetricName": "accuracy"
+  },
+  "Type": "TrainingConfig",
+  "Version": 2
+}

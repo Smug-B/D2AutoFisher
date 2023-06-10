@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows10.0.17763.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>True</UseWindowsForms>
+    <StartupObject>D2AutoFisher.Program</StartupObject>
+    <ApplicationIcon>D2AutoFisher.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="D2AutoFisher.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.ImageAnalytics" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.15.0" />
+    <PackageReference Include="Microsoft.ML.OnnxTransformer" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Project References\SDL2-CS\SDL2-CS.csproj" />
+    <ProjectReference Include="..\SmugSystems\SmugBase\SmugBase.csproj" />
+  </ItemGroup>
+  <ItemGroup Label="InteractionBoxLocator">
+    <None Include="InteractionBoxLocator.consumption.cs">
+      <DependentUpon>InteractionBoxLocator.mbconfig</DependentUpon>
+    </None>
+    <None Include="InteractionBoxLocator.map.json">
+      <DependentUpon>InteractionBoxLocator.mbconfig</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="InteractionBoxLocator.onnx">
+      <DependentUpon>InteractionBoxLocator.mbconfig</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="InteractionBoxLocator.training.cs">
+      <DependentUpon>InteractionBoxLocator.mbconfig</DependentUpon>
+    </None>
+    <None Include="InteractionBoxLocator.zip">
+      <DependentUpon>InteractionBoxLocator.mbconfig</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

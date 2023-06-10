@@ -1,0 +1,63 @@
+﻿{
+  "TrainingTime": 2147482,
+  "Scenario": "ImageClassification",
+  "DataSource": {
+    "Type": "Folder",
+    "Version": 1,
+    "FolderPath": "C:\\Users\\smugb\\Documents\\Projects\\D2AutoFisher\\Samples\\Edited"
+  },
+  "Environment": {
+    "Type": "Azure",
+    "Version": 1,
+    "SubscriptionID": "5c09c93b-0512-4318-8e97-89b180efc784",
+    "ResourceGroupName": "Alpha",
+    "WorkspaceName": "D2_Auto_Fisher",
+    "ComputeName": "AutoFisher",
+    "Location": "eastus",
+    "ExperimentName": "Interaction_Box_Detector"
+  },
+  "RunHistory": {
+    "Version": 1,
+    "Type": "Result",
+    "Trials": [
+      {
+        "Version": 0,
+        "Type": "Trial",
+        "TrainerName": "DNN + SE-ResNeXt-50",
+        "Score": 1.0,
+        "RuntimeInSeconds": 2110.2224816
+      }
+    ],
+    "Pipeline": {
+      "parameter": {
+        "0": {
+          "OutputColumnName": "input1",
+          "InputColumnName": "input1",
+          "ImageHeight": 224,
+          "ImageWidth": 224,
+          "CropAnchor": "Center",
+          "Resizing": "IsoCrop"
+        },
+        "1": {
+          "OutputColumnName": "input1",
+          "InputColumnName": "input1",
+          "ColorsToExtract": "Rgb",
+          "OrderOfExtraction": "ARGB",
+          "OutputAsFloatArray": true
+        },
+        "2": {
+          "ModelFile": "C:\\Users\\smugb\\Documents\\Projects\\D2AutoFisher\\AutomatedFishing\\InteractionBoxDetector.onnx",
+          "FallbackToCpu": true
+        }
+      },
+      "estimators": [
+        "ResizeImages",
+        "ExtractPixels",
+        "ApplyOnnxModel"
+      ]
+    },
+    "MetricName": "accuracy"
+  },
+  "Type": "TrainingConfig",
+  "Version": 2
+}
