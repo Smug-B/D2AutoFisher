@@ -175,6 +175,7 @@ namespace D2AutoFisher
             GitHubLink.TabIndex = 6;
             GitHubLink.TabStop = true;
             GitHubLink.Text = "GitHub";
+            GitHubLink.LinkClicked += GitHubLink_LinkClicked;
             ToolTip.SetToolTip(GitHubLink, "Links to this program's repository, useful for reporting issues formally.");
             // 
             // PredictionEngineCheckbox

@@ -3,7 +3,9 @@ using Newtonsoft.Json;
 using SmugBase.Logging;
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.Security.Policy;
 using System.Text;
+using System.Windows.Forms;
 
 namespace D2AutoFisher
 {
@@ -192,6 +194,27 @@ namespace D2AutoFisher
             catch (Exception exception)
             {
                 string errorMessage = "Saving settings failed with error: " + exception.Message;
+                Program.Logger.Log(errorMessage, LogType.Error);
+                MessageBox.Show(errorMessage);
+            }
+        }
+
+        private void GitHubLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                LinkLabel linkLabel = (LinkLabel)sender;
+                linkLabel.LinkVisited = true;
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "https://github.com/SmugBlanco/D2AutoFisher",
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            catch (Exception exception)
+            {
+                string errorMessage = "Visiting GitHub failed with error: " + exception.Message;
                 Program.Logger.Log(errorMessage, LogType.Error);
                 MessageBox.Show(errorMessage);
             }
