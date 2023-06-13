@@ -7,6 +7,20 @@ namespace D2AutoFisher.Utility
     public static class ScreenUtility
     {
         /// <returns>The contents of the currently active screen as a <see cref="Bitmap"/></returns>
+        public static List<Bitmap> GetScreensAsBitmap()
+        {
+            List<Bitmap> output = new List<Bitmap>();
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                Bitmap captureBitmap = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height, PixelFormat.Format32bppArgb);
+                using Graphics captureGraphics = Graphics.FromImage(captureBitmap);
+                captureGraphics.CopyFromScreen(SystemInformation.VirtualScreen.Left, SystemInformation.VirtualScreen.Top, 0, 0, captureBitmap.Size);
+                output.Add(captureBitmap);
+            }
+            return output;
+        }
+
+        /// <returns>The contents of the currently active screen as a <see cref="Bitmap"/></returns>
         public static Bitmap GetScreenAsBitmap()
         {
             Bitmap captureBitmap = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height, PixelFormat.Format32bppArgb);

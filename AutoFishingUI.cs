@@ -99,47 +99,65 @@ namespace D2AutoFisher
                     throw new Exception("Failed to find Destiny 2 window.");
                 }
 
-                using Bitmap captureBitmap = ScreenUtility.GetScreenAsBitmap();
-                int screenWidth = captureBitmap.Width;
-                int screenHeight = captureBitmap.Height;
-                captureBitmap.Save(@"Calibration_Input.jpg", ImageFormat.Jpeg);
+                ScreenUtility.GetScreenAsBitmap().Save(@"Calibration_Input.jpg", ImageFormat.Jpeg);
                 Program.Logger.Log("Recorded screen data for calibration data.");
 
-                InteractionBoxLocator.ModelInput calibrationInput = new InteractionBoxLocator.ModelInput()
+                List<Bitmap> captures = ScreenUtility.GetScreensAsBitmap();
+                int x = 0;
+                for (int i = 0; i < captures.Count; i++)
                 {
-                    ImageSource = ScreenUtility.BitmapToMLImage(captureBitmap),
-                };
-                Program.Logger.Log("Initialized indicator detector input.");
+                    using Bitmap captureBitmap = captures[i];
+                    int screenWidth = captureBitmap.Width;
+                    int screenHeight = captureBitmap.Height;
 
-                InteractionBoxLocator.ModelOutput calibrationOutput = InteractionBoxLocator.Predict(calibrationInput);
-                int detectedLabels = calibrationOutput.Scores.Length;
-                if (detectedLabels == 0)
-                {
-                    throw new Exception("Failed to find relevant fishing indicators.");
+                    if (i != 0)
+                    {
+                        x += screenWidth;
+                    }
+
+                    captureBitmap.Save(@"Calibration_Input_" + i + ".jpg", ImageFormat.Jpeg);
+                    Program.Logger.Log("Recorded screen data for calibration data.");
+
+                    InteractionBoxLocator.ModelInput calibrationInput = new InteractionBoxLocator.ModelInput()
+                    {
+                        ImageSource = ScreenUtility.BitmapToMLImage(captureBitmap),
+                    };
+                    Program.Logger.Log("Initialized indicator detector input.");
+
+                    InteractionBoxLocator.ModelOutput calibrationOutput = InteractionBoxLocator.Predict(calibrationInput);
+                    int detectedLabels = calibrationOutput.Scores.Length;
+                    if (detectedLabels != 0)
+                    {
+                        Program.Logger.Log("Found relevant fishing indicators.", LogType.Info);
+
+                        using Graphics captureBitmapGraphics = Graphics.FromImage(captureBitmap);
+                        Program.Logger.Log("Preparing calibration output images for human verification.", LogType.Info);
+
+                        float xScale = (float)screenWidth / InteractionBoxLocator.ModelInput.ImageTransformX;
+                        float yScale = (float)screenHeight / InteractionBoxLocator.ModelInput.ImageTransformY;
+                        InteractionBoxLocator.ModelOutput.BoundingBox box = calibrationOutput.BoundingBoxes.First(box => box.Label == "Interaction Box");
+                        Color markingColor = box.Label switch
+                        {
+                            "Interaction Box" => Color.IndianRed,
+                            _ => Color.CornflowerBlue,
+                        };
+                        using Pen markingPen = new Pen(markingColor, 4);
+                        int width = (int)((box.Right - box.Left) * xScale);
+                        int height = (int)((box.Bottom - box.Top) * yScale);
+                        Program.Settings.InteractionBox = new Rectangle((int)(box.Left * xScale), (int)(box.Top * yScale), (int)((box.Right - box.Left) * xScale), (int)((box.Bottom - box.Top) * yScale));
+                        Program.Settings.InteractionBox.X += x;
+                        captureBitmapGraphics.DrawRectangle(markingPen, Program.Settings.InteractionBox);
+                        Program.Logger.Log("Found " + box.Label + " at (" + box.Left + ", " + box.Top + ") [Scaling Factor: (" + xScale + ", " + yScale + ")] "
+                        + "with confidence " + box.Score + "%", LogType.Info);
+                        captureBitmap.Save(@"Calibration_Output_" + i + ".jpg", ImageFormat.Jpeg);
+                        Program.Logger.Log("Recorded calibration output images.");
+                        goto endCalibration;
+                    }
                 }
-                Program.Logger.Log("Found relevant fishing indicators.", LogType.Info);
 
-                using Graphics captureBitmapGraphics = Graphics.FromImage(captureBitmap);
-                Program.Logger.Log("Preparing calibration output images for human verification.", LogType.Info);
+                throw new Exception("Failed to find relevant fishing indicators.");
 
-                float xScale = (float)screenWidth / InteractionBoxLocator.ModelInput.ImageTransformX;
-                float yScale = (float)screenHeight / InteractionBoxLocator.ModelInput.ImageTransformY;
-                InteractionBoxLocator.ModelOutput.BoundingBox box = calibrationOutput.BoundingBoxes.First(box => box.Label == "Interaction Box");
-                Color markingColor = box.Label switch
-                {
-                    "Interaction Box" => Color.IndianRed,
-                    _ => Color.CornflowerBlue,
-                };
-                using Pen markingPen = new Pen(markingColor, 4);
-                int width = (int)((box.Right - box.Left) * xScale);
-                int height = (int)((box.Bottom - box.Top) * yScale);
-                Program.Settings.InteractionBox = new Rectangle((int)(box.Left * xScale), (int)(box.Top * yScale), (int)((box.Right - box.Left) * xScale), (int)((box.Bottom - box.Top) * yScale));
-                captureBitmapGraphics.DrawRectangle(markingPen, Program.Settings.InteractionBox);
-                Program.Logger.Log("Found " + box.Label + " at (" + box.Left + ", " + box.Top + ") [Scaling Factor: (" + xScale + ", " + yScale + ")] "
-                + "with confidence " + box.Score + "%", LogType.Info);
-                captureBitmap.Save(@"Calibration_Output.jpg", ImageFormat.Jpeg);
-                Program.Logger.Log("Recorded calibration output images.");
-
+                endCalibration:
                 string calibrationSerialized = JsonConvert.SerializeObject(Program.Settings);
                 using FileStream jsonStream = new FileStream(Program.ConfigPath, FileMode.Create);
                 jsonStream.Write(Encoding.ASCII.GetBytes(calibrationSerialized));
